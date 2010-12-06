@@ -1,0 +1,98 @@
+A basic example to show how you can use couchdb to store, index, and query page link data that is typical of SEO-like applications.
+
+Requirements: assumes couchdbkit is installed on the local machine.  For instructions see:
+http://couchdbkit.org/download.html
+but it boils down to:
+sudo easy_install -U couchbkit
+
+
+#Create an empty database and upload view code:
+python adminViews.py <design-doc-directory> <uri> <dbname>
+e.g.:
+python adminViews.py _design/ 'http://mlmiller:<pwd>@mlmiller.cloudant.com' seo2
+
+
+#populate that database with simulated SEO information:
+python seoSim.py <uri> <dbname>
+e.g.:
+python seoSim.py 'http://mlmiller:<pwd>@mlmiller.cloudant.com' seo2
+
+#and then useful queries (these should work if you cut/paste, since I've granted read-access to the db):
+
+1) backlinks for a certain date.  Let's find all of the pages ("urls") that contained a link to the page http://www.link1.com ("link") when crawled and entered on December 24, 2010:
+
+curl -X GET 'http://mlmiller.cloudant.com/seo2/_design/seo/_view/backlinks?reduce=false&descending=true&key=\["http://www.link1.com",2010,12,24\]'
+
+
+{"total_rows":1534,"offset":949,"rows":[
+{"id":"page9_2010_12_24","key":["http://www.link1.com",2010,12,24],"value":["http://www.page9.com",["http://www.link1.com","visit me"],1]},
+{"id":"page7_2010_12_24","key":["http://www.link1.com",2010,12,24],"value":["http://www.page7.com",["http://www.link1.com","visit me"],1]},
+{"id":"page4_2010_12_24","key":["http://www.link1.com",2010,12,24],"value":["http://www.page4.com",["http://www.link1.com","visit me"],1]},
+{"id":"page3_2010_12_24","key":["http://www.link1.com",2010,12,24],"value":["http://www.page3.com",["http://www.link1.com","visit me"],1]},
+{"id":"page0_2010_12_24","key":["http://www.link1.com",2010,12,24],"value":["http://www.page0.com",["http://www.link1.com","visit me"],1]}
+]}
+
+2) backlinks for a range of dates.  Let's do the same, but expand it for the range 12/24/2010 back to 12/15/2010:
+
+curl -X GET 'http://mlmiller.cloudant.com/seo2/_design/seo/_view/backlinks?reduce=false&descending=true&startkey=\["http://www.link1.com",2010,12,24\]&endkey=\["http://www.link1.com",2010,12,15\]'
+
+{"total_rows":1534,"offset":949,"rows":[
+{"id":"page9_2010_12_24","key":["http://www.link1.com",2010,12,24],"value":["http://www.page9.com",["http://www.link1.com","visit me"],1]},
+{"id":"page7_2010_12_24","key":["http://www.link1.com",2010,12,24],"value":["http://www.page7.com",["http://www.link1.com","visit me"],1]},
+{"id":"page4_2010_12_24","key":["http://www.link1.com",2010,12,24],"value":["http://www.page4.com",["http://www.link1.com","visit me"],1]},
+{"id":"page3_2010_12_24","key":["http://www.link1.com",2010,12,24],"value":["http://www.page3.com",["http://www.link1.com","visit me"],1]},
+{"id":"page0_2010_12_24","key":["http://www.link1.com",2010,12,24],"value":["http://www.page0.com",["http://www.link1.com","visit me"],1]},
+{"id":"page6_2010_12_23","key":["http://www.link1.com",2010,12,23],"value":["http://www.page6.com",["http://www.link1.com","visit me"],1]},
+{"id":"page5_2010_12_23","key":["http://www.link1.com",2010,12,23],"value":["http://www.page5.com",["http://www.link1.com","visit me"],1]},
+{"id":"page4_2010_12_23","key":["http://www.link1.com",2010,12,23],"value":["http://www.page4.com",["http://www.link1.com","visit me"],1]},
+{"id":"page3_2010_12_23","key":["http://www.link1.com",2010,12,23],"value":["http://www.page3.com",["http://www.link1.com","visit me"],1]},
+{"id":"page2_2010_12_23","key":["http://www.link1.com",2010,12,23],"value":["http://www.page2.com",["http://www.link1.com","visit me"],1]},
+{"id":"page1_2010_12_23","key":["http://www.link1.com",2010,12,23],"value":["http://www.page1.com",["http://www.link1.com","visit me"],1]},
+{"id":"page0_2010_12_23","key":["http://www.link1.com",2010,12,23],"value":["http://www.page0.com",["http://www.link1.com","visit me"],1]},
+{"id":"page9_2010_12_22","key":["http://www.link1.com",2010,12,22],"value":["http://www.page9.com",["http://www.link1.com","visit me"],1]},
+{"id":"page8_2010_12_22","key":["http://www.link1.com",2010,12,22],"value":["http://www.page8.com",["http://www.link1.com","visit me"],1]},
+{"id":"page5_2010_12_22","key":["http://www.link1.com",2010,12,22],"value":["http://www.page5.com",["http://www.link1.com","visit me"],1]},
+{"id":"page3_2010_12_22","key":["http://www.link1.com",2010,12,22],"value":["http://www.page3.com",["http://www.link1.com","visit me"],1]},
+{"id":"page2_2010_12_22","key":["http://www.link1.com",2010,12,22],"value":["http://www.page2.com",["http://www.link1.com","visit me"],1]},
+{"id":"page7_2010_12_21","key":["http://www.link1.com",2010,12,21],"value":["http://www.page7.com",["http://www.link1.com","visit me"],1]},
+{"id":"page5_2010_12_21","key":["http://www.link1.com",2010,12,21],"value":["http://www.page5.com",["http://www.link1.com","visit me"],1]},
+{"id":"page4_2010_12_21","key":["http://www.link1.com",2010,12,21],"value":["http://www.page4.com",["http://www.link1.com","visit me"],1]},
+{"id":"page3_2010_12_21","key":["http://www.link1.com",2010,12,21],"value":["http://www.page3.com",["http://www.link1.com","visit me"],1]},
+{"id":"page2_2010_12_21","key":["http://www.link1.com",2010,12,21],"value":["http://www.page2.com",["http://www.link1.com","visit me"],1]},
+{"id":"page1_2010_12_21","key":["http://www.link1.com",2010,12,21],"value":["http://www.page1.com",["http://www.link1.com","visit me"],1]},
+{"id":"page9_2010_12_20","key":["http://www.link1.com",2010,12,20],"value":["http://www.page9.com",["http://www.link1.com","visit me"],1]},
+{"id":"page6_2010_12_20","key":["http://www.link1.com",2010,12,20],"value":["http://www.page6.com",["http://www.link1.com","visit me"],1]},
+{"id":"page5_2010_12_20","key":["http://www.link1.com",2010,12,20],"value":["http://www.page5.com",["http://www.link1.com","visit me"],1]},
+{"id":"page3_2010_12_20","key":["http://www.link1.com",2010,12,20],"value":["http://www.page3.com",["http://www.link1.com","visit me"],1]},
+{"id":"page2_2010_12_20","key":["http://www.link1.com",2010,12,20],"value":["http://www.page2.com",["http://www.link1.com","visit me"],1]},
+{"id":"page8_2010_12_19","key":["http://www.link1.com",2010,12,19],"value":["http://www.page8.com",["http://www.link1.com","visit me"],1]},
+{"id":"page6_2010_12_19","key":["http://www.link1.com",2010,12,19],"value":["http://www.page6.com",["http://www.link1.com","visit me"],1]},
+{"id":"page4_2010_12_19","key":["http://www.link1.com",2010,12,19],"value":["http://www.page4.com",["http://www.link1.com","visit me"],1]},
+{"id":"page1_2010_12_19","key":["http://www.link1.com",2010,12,19],"value":["http://www.page1.com",["http://www.link1.com","visit me"],1]},
+{"id":"page0_2010_12_19","key":["http://www.link1.com",2010,12,19],"value":["http://www.page0.com",["http://www.link1.com","visit me"],1]},
+{"id":"page8_2010_12_18","key":["http://www.link1.com",2010,12,18],"value":["http://www.page8.com",["http://www.link1.com","visit me"],1]},
+{"id":"page7_2010_12_18","key":["http://www.link1.com",2010,12,18],"value":["http://www.page7.com",["http://www.link1.com","visit me"],1]},
+{"id":"page4_2010_12_18","key":["http://www.link1.com",2010,12,18],"value":["http://www.page4.com",["http://www.link1.com","visit me"],1]},
+{"id":"page1_2010_12_18","key":["http://www.link1.com",2010,12,18],"value":["http://www.page1.com",["http://www.link1.com","visit me"],1]},
+{"id":"page8_2010_12_17","key":["http://www.link1.com",2010,12,17],"value":["http://www.page8.com",["http://www.link1.com","visit me"],1]},
+{"id":"page7_2010_12_17","key":["http://www.link1.com",2010,12,17],"value":["http://www.page7.com",["http://www.link1.com","visit me"],1]},
+{"id":"page6_2010_12_17","key":["http://www.link1.com",2010,12,17],"value":["http://www.page6.com",["http://www.link1.com","visit me"],1]},
+{"id":"page5_2010_12_17","key":["http://www.link1.com",2010,12,17],"value":["http://www.page5.com",["http://www.link1.com","visit me"],1]},
+{"id":"page3_2010_12_17","key":["http://www.link1.com",2010,12,17],"value":["http://www.page3.com",["http://www.link1.com","visit me"],1]},
+{"id":"page0_2010_12_17","key":["http://www.link1.com",2010,12,17],"value":["http://www.page0.com",["http://www.link1.com","visit me"],1]},
+{"id":"page7_2010_12_16","key":["http://www.link1.com",2010,12,16],"value":["http://www.page7.com",["http://www.link1.com","visit me"],1]},
+{"id":"page6_2010_12_16","key":["http://www.link1.com",2010,12,16],"value":["http://www.page6.com",["http://www.link1.com","visit me"],1]},
+{"id":"page5_2010_12_16","key":["http://www.link1.com",2010,12,16],"value":["http://www.page5.com",["http://www.link1.com","visit me"],1]},
+{"id":"page4_2010_12_16","key":["http://www.link1.com",2010,12,16],"value":["http://www.page4.com",["http://www.link1.com","visit me"],1]},
+{"id":"page3_2010_12_16","key":["http://www.link1.com",2010,12,16],"value":["http://www.page3.com",["http://www.link1.com","visit me"],1]},
+{"id":"page1_2010_12_16","key":["http://www.link1.com",2010,12,16],"value":["http://www.page1.com",["http://www.link1.com","visit me"],1]},
+{"id":"page0_2010_12_16","key":["http://www.link1.com",2010,12,16],"value":["http://www.page0.com",["http://www.link1.com","visit me"],1]},
+{"id":"page9_2010_12_15","key":["http://www.link1.com",2010,12,15],"value":["http://www.page9.com",["http://www.link1.com","visit me"],1]},
+{"id":"page7_2010_12_15","key":["http://www.link1.com",2010,12,15],"value":["http://www.page7.com",["http://www.link1.com","visit me"],1]},
+{"id":"page6_2010_12_15","key":["http://www.link1.com",2010,12,15],"value":["http://www.page6.com",["http://www.link1.com","visit me"],1]},
+{"id":"page3_2010_12_15","key":["http://www.link1.com",2010,12,15],"value":["http://www.page3.com",["http://www.link1.com","visit me"],1]},
+{"id":"page1_2010_12_15","key":["http://www.link1.com",2010,12,15],"value":["http://www.page1.com",["http://www.link1.com","visit me"],1]},
+{"id":"page0_2010_12_15","key":["http://www.link1.com",2010,12,15],"value":["http://www.page0.com",["http://www.link1.com","visit me"],1]}
+]}
+
+voila!

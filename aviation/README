@@ -1,0 +1,20 @@
+This is a simple example of using Cloudant's mapreduce for textual and numerical data analysis.
+
+* Requirements
+    python (2.5+?)
+    couchdkit: http://couchdbkit.org/download.html (=> sudo easy_install -U couchdbkit)
+    
+* Input data:
+    AviationData.txt.gz taken from data.gov
+
+* _design/:
+    a directory of map.js and reduce.js files that get mapped to a design document and uploaded
+
+* upload.py
+    a python script to create the database, upload the data in AvaiationData.txt.gz, and build the mapreduce views
+    execute via:
+    > python upload.py AviationData.txt.gz 'http://<username>:<password>@<username>.cloudant.com' planes
+    
+* analyze.sh
+    a bash script to demonstrate example queries of our prebuilt mapreduce views for data analysis
+

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<title>MyHomeStuff2</title>
+  	<script src="/_utils/script/jquery.js"></script>
+  	<script src="/_utils/script/jquery.couch.js"></script>
+  	<script src="script.js"></script>
+  </head>
+  <body>
+    <h3>Overview</h3>
+    <ul id="itemData" ></ul>
+
+    <h3>Details</h3>
+    <form name="itemForm">
+            <input type="hidden" name="id" id="idId" />
+            <input type="hidden" name="rev" id="revId"/>
+            <label for="amount">Qty: </label>
+            <input type="text" name="amount" id="amountId" size = 3/>
+            <label for="name">Name: </label>
+            <input type="text" name="name" id="nameId" size=12 />
+            <br><br>
+            <input type="button" id="createId" value="create" />
+            <input type="button" id="updateId" value="update" />
+            <input type="button" id="deleteId" value="delete" />
+    </form>
+   
+    <h3>Replicate</h3>
+    <form>
+      <label for="sourceDBId">Source: </label>
+      <input id="sourceDBId" type="text"></input>
+      <br><br>
+      <label for="targetDBId">Target: </label>
+      <input id="targetDBId" type="text"></input>
+      <br><br>
+      <input id="replicateId" type="button" value="replicate"></input>
+   </form>
+   
+  </body>
+</html>
